@@ -45,7 +45,7 @@ public partial class App : Application
                 using var show = EventWaitHandle.OpenExisting(ShowEventName);
                 show.Set();
             }
-            catch
+            catch (WaitHandleCannotBeOpenedException)
             {
             }
 
@@ -54,7 +54,6 @@ public partial class App : Application
         }
 
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
         _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowEventName);
         _showListenerCts = new CancellationTokenSource();
         StartShowListener(_showListenerCts.Token);
@@ -75,7 +74,7 @@ public partial class App : Application
 
             _tray = new TaskbarIcon
             {
-                ToolTipText = "AUDSPLIT — audio your way",
+                ToolTipText = "AUDSPLIT - audio your way",
                 Icon = _trayIcon,
                 ContextMenu = BuildContextMenu(),
                 MenuActivation = PopupActivationMode.RightClick,
@@ -93,59 +92,53 @@ public partial class App : Application
             return;
         }
 
-        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
-        {
-            if (_flyout is null)
-            {
-                return;
-            }
-
-            _flyout.ShowNearCursor();
-        });
+        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, ShowFlyoutSafe);
     }
 
     private void StartShowListener(CancellationToken token)
     {
+        var showEvent = _showEvent;
+        if (showEvent is null)
+        {
+            return;
+        }
+
         Task.Run(() =>
         {
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    if (_showEvent is null)
+                    if (!showEvent.WaitOne(500))
                     {
-                        return;
+                        continue;
                     }
 
-                    if (_showEvent.WaitOne(500))
-                    {
-                        Dispatcher.BeginInvoke(() =>
-                        {
-                            if (_flyout is null)
-                            {
-                                return;
-                            }
-
-                            if (!_flyout.IsVisible)
-                            {
-                                _flyout.ShowNearCursor();
-                            }
-                            else
-                            {
-                                _flyout.Activate();
-                            }
-                        });
-                    }
+                    Dispatcher.BeginInvoke(ShowFlyoutSafe);
                 }
                 catch (ObjectDisposedException)
                 {
                     return;
                 }
-                catch
-                {
-                }
             }
         }, token);
+    }
+
+    private void ShowFlyoutSafe()
+    {
+        if (_flyout is null)
+        {
+            return;
+        }
+
+        if (_flyout.IsVisible)
+        {
+            _flyout.Activate();
+        }
+        else
+        {
+            _flyout.ShowNearCursor();
+        }
     }
 
     private static void RunSmokeTest()
@@ -169,7 +162,7 @@ public partial class App : Application
             Log($"Output devices ({outs.Count}):");
             foreach (var d in outs)
             {
-                Log($"  - {(d.IsDefault ? "[default] " : "")}{d.Name} · {(int)Math.Round(d.Volume * 100)}%{(d.IsMuted ? " muted" : "")}");
+                Log($"  - {(d.IsDefault ? "[default] " : "")}{d.Name} {((int)Math.Round(d.Volume * 100))}%{(d.IsMuted ? " muted" : "")}");
             }
 
             using var sessions = new SessionService(routing);
@@ -262,14 +255,7 @@ public partial class App : Application
             try { File.Delete(_tempIconPath); } catch { }
         }
 
-        try
-        {
-            _mutex?.ReleaseMutex();
-        }
-        catch
-        {
-        }
-
+        try { _mutex?.ReleaseMutex(); } catch { }
         _mutex?.Dispose();
 
         base.OnExit(e);

@@ -17,7 +17,7 @@ internal static class AutoHideScroll
 
     public static void Attach(ScrollViewer viewer)
     {
-        if (viewer is null || (bool)viewer.GetValue(AttachedProperty))
+        if ((bool)viewer.GetValue(AttachedProperty))
         {
             return;
         }

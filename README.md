@@ -1,21 +1,21 @@
 # AUDSPLIT
 
 <p align="center">
-  <img src="docs/audsplit-hero.png" alt="AUDSPLIT — per-app audio routing for Windows" width="920"/>
+  <img src="docs/audsplit-hero.png" alt="AUDSPLIT - per-app audio routing for Windows" width="920"/>
 </p>
 
 <p align="center"><strong>AUDIO. YOUR WAY.</strong></p>
 
-Per-app audio output routing for Windows. Send Spotify to Bluetooth headphones, Meet to wired cans, and games to speakers — at the same time.
+Per-app audio output routing for Windows. Send Spotify to Bluetooth headphones, Meet to wired cans, and games to speakers at the same time.
 
 Uses the same Windows mechanism as **Settings → System → Sound → Volume mixer** (`IAudioPolicyConfigFactory`).
 
 ## Features
 
-- **Per-app output routing** — pick a device for each playing app
-- **Per-speaker volume + mute** — control each endpoint, not just the system default
-- **System tray flyout** — Apps / Speakers pages, stays out of the way
-- **Persisted routes** — Windows remembers assignments across restarts
+- **Per-app output routing** - pick a device for each playing app
+- **Per-speaker volume + mute** - control each endpoint, not just the system default
+- **System tray flyout** - Apps / Speakers pages, stays out of the way
+- **Persisted routes** - Windows remembers assignments across restarts
 
 ## Download
 
@@ -29,8 +29,8 @@ Requires **Windows 10 1809+** or **Windows 11**. The release build is self-conta
 
 1. AUDSPLIT lives in the **system tray**.
 2. **Left-click** the tray icon to open the flyout.
-3. **Apps** — start audio in the apps you want, hit **Refresh**, pick an output (or System default).
-4. **Speakers** — set volume / mute per device.
+3. **Apps** - start audio in the apps you want, hit **Refresh**, pick an output (or System default).
+4. **Speakers** - set volume / mute per device.
 5. **Reset all** clears every persisted per-app route.
 
 Right-click tray: Open / Refresh / Exit.

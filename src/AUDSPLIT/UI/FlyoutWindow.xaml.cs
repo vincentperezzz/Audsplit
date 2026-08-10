@@ -161,41 +161,31 @@ public partial class FlyoutWindow : Window
 
     private void ShowAppsPage()
     {
-        _onSpeakersPage = false;
-        _suppressTabChanged = true;
-        try
-        {
-            AppsTab.IsChecked = true;
-            SpeakersTab.IsChecked = false;
-        }
-        finally
-        {
-            _suppressTabChanged = false;
-        }
-
-        AppsPage.Visibility = Visibility.Visible;
-        SpeakersScroll.Visibility = Visibility.Collapsed;
-        ResetAllButton.Visibility = Visibility.Visible;
-        UpdatePageChrome();
+        SetPage(speakers: false);
     }
 
     private void ShowSpeakersPage()
     {
-        _onSpeakersPage = true;
+        SetPage(speakers: true);
+    }
+
+    private void SetPage(bool speakers)
+    {
+        _onSpeakersPage = speakers;
         _suppressTabChanged = true;
         try
         {
-            SpeakersTab.IsChecked = true;
-            AppsTab.IsChecked = false;
+            AppsTab.IsChecked = !speakers;
+            SpeakersTab.IsChecked = speakers;
         }
         finally
         {
             _suppressTabChanged = false;
         }
 
-        AppsPage.Visibility = Visibility.Collapsed;
-        SpeakersScroll.Visibility = Visibility.Visible;
-        ResetAllButton.Visibility = Visibility.Collapsed;
+        AppsPage.Visibility = speakers ? Visibility.Collapsed : Visibility.Visible;
+        SpeakersScroll.Visibility = speakers ? Visibility.Visible : Visibility.Collapsed;
+        ResetAllButton.Visibility = speakers ? Visibility.Collapsed : Visibility.Visible;
         UpdatePageChrome();
     }
 
@@ -205,7 +195,7 @@ public partial class FlyoutWindow : Window
         {
             SetStatus(Devices.Count == 0
                 ? "No output devices found"
-                : $"Speakers · {Devices.Count} device{(Devices.Count == 1 ? "" : "s")}");
+                : $"Speakers - {Devices.Count} device{(Devices.Count == 1 ? "" : "s")}");
             return;
         }
 
@@ -213,8 +203,8 @@ public partial class FlyoutWindow : Window
         EmptyText.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
         AppsScroll.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
         SetStatus(empty
-            ? "No active apps · hit Refresh after audio starts"
-            : $"Apps · {Apps.Count} session{(Apps.Count == 1 ? "" : "s")} · pick an output");
+            ? "No active apps - hit Refresh after audio starts"
+            : $"Apps - {Apps.Count} session{(Apps.Count == 1 ? "" : "s")} - pick an output");
     }
 
     private void OnDeviceSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -243,8 +233,8 @@ public partial class FlyoutWindow : Window
         }
 
         SetStatus(choice.Id is null
-            ? $"{row.DisplayName} → system default"
-            : $"{row.DisplayName} → {choice.Name}");
+            ? $"{row.DisplayName} -> system default"
+            : $"{row.DisplayName} -> {choice.Name}");
     }
 
     private void OnVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -262,7 +252,7 @@ public partial class FlyoutWindow : Window
         row.VolumePercent = e.NewValue;
         var ok = _devices.SetVolume(row.Id, (float)(e.NewValue / 100.0));
         SetStatus(ok
-            ? $"{row.Name} · {(int)Math.Round(e.NewValue)}%"
+            ? $"{row.Name} - {(int)Math.Round(e.NewValue)}%"
             : $"Failed to set volume for {row.Name}");
     }
 
@@ -282,7 +272,7 @@ public partial class FlyoutWindow : Window
         row.IsMuted = muted;
         var ok = _devices.SetMute(row.Id, muted);
         SetStatus(ok
-            ? $"{row.Name} · {(muted ? "muted" : "unmuted")}"
+            ? $"{row.Name} - {(muted ? "muted" : "unmuted")}"
             : $"Failed to mute {row.Name}");
     }
 

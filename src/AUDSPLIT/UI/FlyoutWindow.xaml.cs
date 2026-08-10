@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Audsplit.Models;
 using Audsplit.Services;
 
@@ -171,6 +172,13 @@ public partial class FlyoutWindow : Window
 
     private void SetPage(bool speakers)
     {
+        if (_onSpeakersPage == speakers &&
+            (speakers ? SpeakersScroll.Visibility : AppsPage.Visibility) == Visibility.Visible)
+        {
+            UpdatePageChrome();
+            return;
+        }
+
         _onSpeakersPage = speakers;
         _suppressTabChanged = true;
         try
@@ -183,10 +191,56 @@ public partial class FlyoutWindow : Window
             _suppressTabChanged = false;
         }
 
-        AppsPage.Visibility = speakers ? Visibility.Collapsed : Visibility.Visible;
-        SpeakersScroll.Visibility = speakers ? Visibility.Visible : Visibility.Collapsed;
         ResetAllButton.Visibility = speakers ? Visibility.Collapsed : Visibility.Visible;
+        CrossfadePages(showSpeakers: speakers);
         UpdatePageChrome();
+    }
+
+    private void CrossfadePages(bool showSpeakers)
+    {
+        var show = showSpeakers ? (UIElement)SpeakersScroll : AppsPage;
+        var hide = showSpeakers ? (UIElement)AppsPage : SpeakersScroll;
+
+        if (!SystemParameters.ClientAreaAnimation)
+        {
+            hide.BeginAnimation(UIElement.OpacityProperty, null);
+            show.BeginAnimation(UIElement.OpacityProperty, null);
+            hide.Opacity = 0;
+            hide.Visibility = Visibility.Collapsed;
+            show.Visibility = Visibility.Visible;
+            show.Opacity = 1;
+            return;
+        }
+
+        var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+        var fadeOut = new DoubleAnimation(hide.Opacity, 0, TimeSpan.FromMilliseconds(120))
+        {
+            EasingFunction = ease,
+            FillBehavior = FillBehavior.Stop,
+        };
+        fadeOut.Completed += (_, _) =>
+        {
+            hide.BeginAnimation(UIElement.OpacityProperty, null);
+            hide.Opacity = 0;
+            hide.Visibility = Visibility.Collapsed;
+        };
+
+        hide.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+
+        show.BeginAnimation(UIElement.OpacityProperty, null);
+        show.Visibility = Visibility.Visible;
+        show.Opacity = 0;
+        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180))
+        {
+            EasingFunction = ease,
+            FillBehavior = FillBehavior.Stop,
+        };
+        fadeIn.Completed += (_, _) =>
+        {
+            show.BeginAnimation(UIElement.OpacityProperty, null);
+            show.Opacity = 1;
+        };
+        show.BeginAnimation(UIElement.OpacityProperty, fadeIn);
     }
 
     private void UpdatePageChrome()
@@ -200,7 +254,7 @@ public partial class FlyoutWindow : Window
         }
 
         var empty = Apps.Count == 0;
-        EmptyText.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        EmptyState.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
         AppsScroll.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
         SetStatus(empty
             ? "No active apps - hit Refresh after audio starts"

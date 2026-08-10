@@ -13,274 +13,296 @@
         ResizeMode="CanResizeWithGrip"
         ShowInTaskbar="False"
         Topmost="True"
-        FontFamily="Segoe UI"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
         FontSize="13"
         Foreground="{StaticResource InkBrush}">
-    <Border CornerRadius="12"
+    <Border CornerRadius="14"
             BorderThickness="1"
             BorderBrush="{StaticResource BorderBrush}"
-            Background="{StaticResource BgBrush}">
+            Background="{StaticResource ShellFillBrush}">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="8" ShadowDepth="4" Opacity="0.35" Color="#000000"/>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="8" Opacity="0.45" Color="#000000"/>
         </Border.Effect>
 
-        <Grid Margin="14">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <Border CornerRadius="13"
+                BorderThickness="1,1,0,0"
+                BorderBrush="{StaticResource EdgeHighlightBrush}"
+                Background="Transparent"
+                ClipToBounds="True">
+            <Grid Margin="16,14,16,14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" LastChildFill="True">
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Margin="12,0,0,0">
-                    <Button x:Name="ResetAllButton"
-                            Content="Reset all"
-                            Style="{StaticResource HeaderGhostButton}"
-                            Margin="0,0,6,0"
-                            Click="OnResetAllClick"/>
-                    <Button Content="Refresh"
-                            Style="{StaticResource HeaderGhostButton}"
-                            Click="OnRefreshClick"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            MouseLeftButtonDown="OnTitleBarMouseDown">
-                    <Image Source="pack://application:,,,/Assets/audsplit-logo.png"
-                           Width="28" Height="28"
-                           Stretch="Uniform"
-                           SnapsToDevicePixels="True"
-                           RenderOptions.BitmapScalingMode="HighQuality"
-                           Margin="0,0,10,0"/>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="AUDSPLIT"
-                                   FontSize="17"
-                                   FontWeight="SemiBold"
-                                   FontStyle="Italic"
-                                   LineHeight="20"
-                                   Foreground="{StaticResource InkBrush}"/>
-                        <TextBlock Text="AUDIO. YOUR WAY."
-                                   FontSize="10"
-                                   LineHeight="14"
-                                   Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,2,0,0"/>
+                <DockPanel Grid.Row="0" LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Right"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="12,0,0,0">
+                        <Button x:Name="ResetAllButton"
+                                Content="Reset all"
+                                Style="{StaticResource HeaderGhostButton}"
+                                Margin="0,0,6,0"
+                                Click="OnResetAllClick"/>
+                        <Button Content="Refresh"
+                                Style="{StaticResource HeaderPrimaryButton}"
+                                Click="OnRefreshClick"/>
                     </StackPanel>
-                </StackPanel>
-            </DockPanel>
 
-            <Border Grid.Row="1"
-                    Height="2"
-                    CornerRadius="1"
-                    Background="{StaticResource BrandRuleBrush}"
-                    Margin="0,12,0,12"
-                    Opacity="0.9"/>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                MouseLeftButtonDown="OnTitleBarMouseDown">
+                        <Image Source="pack://application:,,,/Assets/audsplit-logo.png"
+                               Width="28" Height="28"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Margin="0,0,10,0"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="AUDSPLIT"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       FontStyle="Italic"
+                                       LineHeight="20"
+                                       Foreground="{StaticResource InkBrush}"/>
+                            <TextBlock Text="AUDIO. YOUR WAY."
+                                       FontSize="10"
+                                       LineHeight="14"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
 
-            <Border Grid.Row="2" Style="{StaticResource SegmentBar}">
-                <UniformGrid Columns="2">
-                    <ToggleButton x:Name="AppsTab"
-                                  Content="Apps"
-                                  Style="{StaticResource SegmentButton}"
-                                  IsChecked="True"
-                                  Checked="OnAppsTabChecked"
-                                  Unchecked="OnAppsTabUnchecked"/>
-                    <ToggleButton x:Name="SpeakersTab"
-                                  Content="Speakers"
-                                  Style="{StaticResource SegmentButton}"
-                                  Checked="OnSpeakersTabChecked"
-                                  Unchecked="OnSpeakersTabUnchecked"/>
-                </UniformGrid>
-            </Border>
+                <Border Grid.Row="1"
+                        Height="2"
+                        CornerRadius="1"
+                        Background="{StaticResource BrandRuleBrush}"
+                        Margin="0,12,0,12"
+                        Opacity="0.85"/>
 
-            <Grid Grid.Row="3">
-                <Grid x:Name="AppsPage">
-                    <TextBlock x:Name="EmptyText"
-                               Text="No apps are playing audio.&#x0a;Start Spotify, Chrome, etc. then hit Refresh."
-                               TextAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource MutedBrush}"
-                               TextWrapping="Wrap"
-                               LineHeight="20"
-                               Margin="24,0"
-                               Visibility="Collapsed"/>
+                <Border Grid.Row="2" Style="{StaticResource SegmentBar}">
+                    <UniformGrid Columns="2">
+                        <ToggleButton x:Name="AppsTab"
+                                      Content="Apps"
+                                      Style="{StaticResource SegmentButton}"
+                                      IsChecked="True"
+                                      Checked="OnAppsTabChecked"
+                                      Unchecked="OnAppsTabUnchecked"/>
+                        <ToggleButton x:Name="SpeakersTab"
+                                      Content="Speakers"
+                                      Style="{StaticResource SegmentButton}"
+                                      Checked="OnSpeakersTabChecked"
+                                      Unchecked="OnSpeakersTabUnchecked"/>
+                    </UniformGrid>
+                </Border>
 
-                    <ScrollViewer x:Name="AppsScroll"
-                                  Style="{StaticResource FlyoutScrollViewer}">
-                        <ListBox x:Name="AppsList"
-                                 ItemsSource="{Binding Apps}"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 Padding="0"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    <Setter Property="Padding" Value="0"/>
+                <Grid Grid.Row="3" ClipToBounds="True">
+                    <Grid x:Name="AppsPage">
+                        <StackPanel x:Name="EmptyState"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Margin="28,0"
+                                    Visibility="Collapsed">
+                            <TextBlock Text="&#xE767;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource CyanBrush}"
+                                       Opacity="0.55"/>
+                            <TextBlock Text="Nothing playing"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource InkBrush}"
+                                       Margin="0,12,0,0"/>
+                            <TextBlock Text="Start Spotify, Chrome, or any app, then hit Refresh."
+                                       FontSize="12"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       LineHeight="18"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       Margin="0,6,0,0"
+                                       MaxWidth="280"/>
+                        </StackPanel>
+
+                        <ScrollViewer x:Name="AppsScroll"
+                                      Style="{StaticResource FlyoutScrollViewer}">
+                            <ListBox x:Name="AppsList"
+                                     ItemsSource="{Binding Apps}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="0"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Margin" Value="0,0,0,8"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Focusable" Value="False"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="Row"
+                                                            Style="{StaticResource RowCard}"
+                                                            MinHeight="52">
+                                                        <ContentPresenter VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Row" Property="Background" Value="{StaticResource RowHoverBrush}"/>
+                                                            <Setter TargetName="Row" Property="BorderBrush" Value="#FF3A4A6A"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="36"/>
+                                                <ColumnDefinition Width="12"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="12"/>
+                                                <ColumnDefinition Width="188"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border Grid.Column="0"
+                                                    Width="36" Height="36"
+                                                    CornerRadius="8"
+                                                    Background="{StaticResource Surface2Brush}"
+                                                    VerticalAlignment="Center">
+                                                <Image Source="{Binding Icon}"
+                                                       Width="22" Height="22"
+                                                       Stretch="Uniform"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       SnapsToDevicePixels="True"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayName}"
+                                                           FontWeight="SemiBold"
+                                                           LineHeight="18"
+                                                           Foreground="{StaticResource InkBrush}"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding ProcessName}"
+                                                           FontSize="11"
+                                                           LineHeight="14"
+                                                           Foreground="{StaticResource MutedBrush}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Margin="0,2,0,0"/>
+                                            </StackPanel>
+
+                                            <ComboBox Grid.Column="4"
+                                                      Style="{StaticResource DeviceCombo}"
+                                                      ItemsSource="{Binding DataContext.DeviceChoices, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                      SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                                                      DisplayMemberPath="Name"
+                                                      SelectionChanged="OnDeviceSelectionChanged"
+                                                      VerticalAlignment="Center"
+                                                      Height="32"
+                                                      ToolTip="{Binding SelectedDevice.Name}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <ScrollViewer x:Name="SpeakersScroll"
+                                  Style="{StaticResource FlyoutScrollViewer}"
+                                  Visibility="Collapsed"
+                                  Opacity="0">
+                        <ItemsControl x:Name="DevicesList"
+                                      ItemsSource="{Binding Devices}">
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentPresenter">
                                     <Setter Property="Margin" Value="0,0,0,8"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Focusable" Value="False"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListBoxItem">
-                                                <Border x:Name="Row"
-                                                        Background="{StaticResource SurfaceBrush}"
-                                                        BorderBrush="{StaticResource BorderBrush}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="10"
-                                                        Padding="12,10"
-                                                        MinHeight="52">
-                                                    <ContentPresenter VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="Row" Property="Background" Value="{StaticResource RowHoverBrush}"/>
-                                                        <Setter TargetName="Row" Property="BorderBrush" Value="#FF3A4A6A"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
                                 </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid VerticalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="36"/>
-                                            <ColumnDefinition Width="12"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="12"/>
-                                            <ColumnDefinition Width="188"/>
-                                        </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource RowCard}"
+                                            MinHeight="72">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="32"/>
+                                                <RowDefinition Height="10"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="12"/>
+                                                <ColumnDefinition Width="44"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="34"/>
+                                            </Grid.ColumnDefinitions>
 
-                                        <Border Grid.Column="0"
-                                                Width="36" Height="36"
-                                                CornerRadius="8"
-                                                Background="{StaticResource Surface2Brush}"
-                                                VerticalAlignment="Center">
-                                            <Image Source="{Binding Icon}"
-                                                   Width="22" Height="22"
-                                                   Stretch="Uniform"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   SnapsToDevicePixels="True"
-                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
-                                        </Border>
-
-                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding DisplayName}"
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{Binding Name}"
                                                        FontWeight="SemiBold"
                                                        LineHeight="18"
                                                        Foreground="{StaticResource InkBrush}"
-                                                       TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding ProcessName}"
-                                                       FontSize="11"
-                                                       LineHeight="14"
-                                                       Foreground="{StaticResource MutedBrush}"
                                                        TextTrimming="CharacterEllipsis"
-                                                       Margin="0,2,0,0"/>
-                                        </StackPanel>
+                                                       VerticalAlignment="Center"/>
 
-                                        <ComboBox Grid.Column="4"
-                                                  Style="{StaticResource DeviceCombo}"
-                                                  ItemsSource="{Binding DataContext.DeviceChoices, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                                                  DisplayMemberPath="Name"
-                                                  SelectionChanged="OnDeviceSelectionChanged"
-                                                  VerticalAlignment="Center"
-                                                  Height="32"
-                                                  ToolTip="{Binding SelectedDevice.Name}"/>
-                                    </Grid>
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding VolumeText}"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       LineHeight="14"
+                                                       Width="44"
+                                                       TextAlignment="Right"
+                                                       Foreground="{StaticResource CyanBrush}"
+                                                       Opacity="0.85"
+                                                       VerticalAlignment="Center"/>
+
+                                            <ToggleButton Grid.Column="4"
+                                                          Style="{StaticResource MuteToggle}"
+                                                          VerticalAlignment="Center"
+                                                          IsChecked="{Binding IsMuted, Mode=TwoWay}"
+                                                          Checked="OnMuteChanged"
+                                                          Unchecked="OnMuteChanged"/>
+
+                                            <Slider Grid.Row="2"
+                                                    Grid.Column="0"
+                                                    Grid.ColumnSpan="5"
+                                                    Style="{StaticResource VolumeSlider}"
+                                                    Value="{Binding VolumePercent, Mode=TwoWay}"
+                                                    ValueChanged="OnVolumeChanged"/>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </ScrollViewer>
                 </Grid>
 
-                <ScrollViewer x:Name="SpeakersScroll"
-                              Style="{StaticResource FlyoutScrollViewer}"
-                              Visibility="Collapsed">
-                    <ItemsControl x:Name="DevicesList"
-                                  ItemsSource="{Binding Devices}">
-                        <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter">
-                                <Setter Property="Margin" Value="0,0,0,8"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{StaticResource SurfaceBrush}"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="10"
-                                        Padding="12,10"
-                                        MinHeight="72">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="32"/>
-                                            <RowDefinition Height="10"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="12"/>
-                                            <ColumnDefinition Width="44"/>
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition Width="34"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding Name}"
-                                                   FontWeight="SemiBold"
-                                                   LineHeight="18"
-                                                   Foreground="{StaticResource InkBrush}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   VerticalAlignment="Center"/>
-
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding VolumeText}"
-                                                   FontSize="11"
-                                                   LineHeight="14"
-                                                   Width="44"
-                                                   TextAlignment="Right"
-                                                   Foreground="{StaticResource MutedBrush}"
-                                                   VerticalAlignment="Center"/>
-
-                                        <ToggleButton Grid.Column="4"
-                                                      Style="{StaticResource MuteToggle}"
-                                                      VerticalAlignment="Center"
-                                                      IsChecked="{Binding IsMuted, Mode=TwoWay}"
-                                                      Checked="OnMuteChanged"
-                                                      Unchecked="OnMuteChanged"/>
-
-                                        <Slider Grid.Row="2"
-                                                Grid.Column="0"
-                                                Grid.ColumnSpan="5"
-                                                Style="{StaticResource VolumeSlider}"
-                                                Value="{Binding VolumePercent, Mode=TwoWay}"
-                                                ValueChanged="OnVolumeChanged"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <StackPanel Grid.Row="4" Margin="0,12,0,0">
+                    <Border Height="1"
+                            Background="{StaticResource BorderBrush}"
+                            Opacity="0.55"
+                            Margin="0,0,0,10"/>
+                    <TextBlock x:Name="StatusText"
+                               FontSize="11"
+                               LineHeight="16"
+                               Foreground="{StaticResource MutedBrush}"
+                               TextWrapping="Wrap"
+                               Text="Pick an output for each app. Some apps need pause/play to apply."/>
+                </StackPanel>
             </Grid>
-
-            <TextBlock x:Name="StatusText"
-                       Grid.Row="4"
-                       Margin="2,12,2,0"
-                       FontSize="11"
-                       LineHeight="16"
-                       Foreground="{StaticResource MutedBrush}"
-                       TextWrapping="Wrap"
-                       Text="Pick an output for each app. Some apps need pause/play to apply."/>
-        </Grid>
+        </Border>
     </Border>
 </Window>

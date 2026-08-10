@@ -10,6 +10,8 @@
     <Color x:Key="PurpleColor">#FFA855F7</Color>
     <Color x:Key="BorderColor">#FF2A3550</Color>
     <Color x:Key="RowHoverColor">#FF182033</Color>
+    <Color x:Key="DangerSoftColor">#FFF87171</Color>
+    <Color x:Key="EdgeHighlightColor">#33FFFFFF</Color>
 
     <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
@@ -21,18 +23,36 @@
     <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource PurpleColor}"/>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
     <SolidColorBrush x:Key="RowHoverBrush" Color="{StaticResource RowHoverColor}"/>
+    <SolidColorBrush x:Key="DangerSoftBrush" Color="{StaticResource DangerSoftColor}"/>
+    <SolidColorBrush x:Key="EdgeHighlightBrush" Color="{StaticResource EdgeHighlightColor}"/>
+    <SolidColorBrush x:Key="CyanSoftBrush" Color="#3322D3EE"/>
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#6622D3EE"/>
 
     <LinearGradientBrush x:Key="BrandRuleBrush" StartPoint="0,0.5" EndPoint="1,0.5">
         <GradientStop Color="{StaticResource CyanColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset="0.45"/>
         <GradientStop Color="{StaticResource PurpleColor}" Offset="1"/>
     </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ShellFillBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#FF0A101C" Offset="0"/>
+        <GradientStop Color="{StaticResource BgColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <Duration x:Key="PressDuration">0:0:0.12</Duration>
+    <Duration x:Key="HoverDuration">0:0:0.16</Duration>
+    <CubicEase x:Key="EaseOut" EasingMode="EaseOut"/>
 
     <ControlTemplate x:Key="ComboToggleTemplate" TargetType="ToggleButton">
         <Border x:Name="ComboBorder"
                 Background="{StaticResource Surface2Brush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
-                CornerRadius="8">
+                CornerRadius="8"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Border.RenderTransform>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -43,7 +63,8 @@
                                   VerticalAlignment="Center"
                                   HorizontalAlignment="Left"
                                   RecognizesAccessKey="True"/>
-                <Path Grid.Column="1"
+                <Path x:Name="Chevron"
+                      Grid.Column="1"
                       Width="10" Height="6"
                       Data="M0,0 L5,5 L10,0"
                       Stretch="Uniform"
@@ -53,16 +74,79 @@
                       StrokeEndLineCap="Round"
                       StrokeLineJoin="Round"
                       HorizontalAlignment="Center"
-                      VerticalAlignment="Center"/>
+                      VerticalAlignment="Center"
+                      RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <RotateTransform Angle="0"/>
+                    </Path.RenderTransform>
+                </Path>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter TargetName="ComboBorder" Property="BorderBrush" Value="{StaticResource CyanBrush}"/>
                 <Setter TargetName="ComboBorder" Property="Background" Value="{StaticResource RowHoverBrush}"/>
+                <Setter TargetName="Chevron" Property="Stroke" Value="{StaticResource CyanBrush}"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter TargetName="ComboBorder" Property="BorderBrush" Value="{StaticResource CyanBrush}"/>
+                <Setter TargetName="Chevron" Property="Stroke" Value="{StaticResource CyanBrush}"/>
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Chevron"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                             To="180"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Chevron"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                             To="0"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ComboBorder"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="0.97"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                            <DoubleAnimation Storyboard.TargetName="ComboBorder"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="0.97"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ComboBorder"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                            <DoubleAnimation Storyboard.TargetName="ComboBorder"
+                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1"
+                                             Duration="{StaticResource PressDuration}"
+                                             EasingFunction="{StaticResource EaseOut}"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -84,7 +168,11 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="8"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -94,6 +182,38 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.97"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="0.97"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -107,13 +227,18 @@
         <Setter Property="MinHeight" Value="28"/>
     </Style>
 
+    <Style x:Key="HeaderPrimaryButton" TargetType="Button" BasedOn="{StaticResource HeaderGhostButton}">
+        <Setter Property="BorderBrush" Value="#6622D3EE"/>
+        <Setter Property="Foreground" Value="{StaticResource CyanBrush}"/>
+    </Style>
+
     <Style x:Key="SegmentBar" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Surface2Brush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="3"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
     </Style>
 
     <Style x:Key="SegmentButton" TargetType="ToggleButton">
@@ -129,9 +254,15 @@
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="Bd"
                             Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,0"
-                            MinHeight="{TemplateBinding MinHeight}">
+                            MinHeight="{TemplateBinding MinHeight}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -140,7 +271,42 @@
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#5522D3EE"/>
                             <Setter Property="Foreground" Value="{StaticResource CyanBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.97"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="0.97"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -155,7 +321,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
                     <Border x:Name="ThumbBd"
-                            Background="#6622D3EE"
+                            Background="{StaticResource ScrollThumbBrush}"
                             CornerRadius="3"
                             Margin="1,0"/>
                     <ControlTemplate.Triggers>
@@ -239,11 +405,12 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SectionLabel" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="10"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
-        <Setter Property="Margin" Value="2,0,0,8"/>
+    <Style x:Key="RowCard" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="12,10"/>
     </Style>
 
     <Style x:Key="MuteToggle" TargetType="ToggleButton">
@@ -259,7 +426,11 @@
                             Background="{StaticResource Surface2Brush}"
                             BorderBrush="{StaticResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="8">
+                            CornerRadius="8"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
                         <TextBlock x:Name="Glyph"
                                    Text="&#xE767;"
                                    FontFamily="Segoe MDL2 Assets"
@@ -274,10 +445,45 @@
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource RowHoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="#FFF87171"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource DangerSoftBrush}"/>
+                            <Setter TargetName="Bd" Property="Background" Value="#22F87171"/>
                             <Setter TargetName="Glyph" Property="Text" Value="&#xE74F;"/>
-                            <Setter TargetName="Glyph" Property="Foreground" Value="#FFF87171"/>
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource DangerSoftBrush}"/>
                             <Setter Property="ToolTip" Value="Unmute"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.95"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="0.95"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                        <DoubleAnimation Storyboard.TargetName="Bd"
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1"
+                                                         Duration="{StaticResource PressDuration}"
+                                                         EasingFunction="{StaticResource EaseOut}"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -298,8 +504,7 @@
                         <Border Height="4"
                                 CornerRadius="2"
                                 Background="{StaticResource Surface2Brush}"
-                                VerticalAlignment="Center"
-                                Margin="0,0,0,0"/>
+                                VerticalAlignment="Center"/>
                         <Track x:Name="PART_Track">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="{x:Static Slider.DecreaseLarge}" IsTabStop="False">
@@ -307,7 +512,7 @@
                                         <ControlTemplate TargetType="RepeatButton">
                                             <Border Height="4"
                                                     CornerRadius="2,0,0,2"
-                                                    Background="{StaticResource CyanBrush}"
+                                                    Background="{StaticResource BrandRuleBrush}"
                                                     VerticalAlignment="Center"/>
                                         </ControlTemplate>
                                     </RepeatButton.Template>
@@ -320,13 +525,50 @@
                                             <Ellipse x:Name="ThumbDot"
                                                      Fill="{StaticResource InkBrush}"
                                                      Stroke="{StaticResource CyanBrush}"
-                                                     StrokeThickness="2"/>
+                                                     StrokeThickness="2"
+                                                     RenderTransformOrigin="0.5,0.5">
+                                                <Ellipse.RenderTransform>
+                                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="ThumbDot" Property="Fill" Value="{StaticResource CyanBrush}"/>
                                                 </Trigger>
                                                 <Trigger Property="IsDragging" Value="True">
                                                     <Setter TargetName="ThumbDot" Property="Fill" Value="{StaticResource CyanBrush}"/>
+                                                    <Trigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="ThumbDot"
+                                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                                 To="1.15"
+                                                                                 Duration="{StaticResource PressDuration}"
+                                                                                 EasingFunction="{StaticResource EaseOut}"/>
+                                                                <DoubleAnimation Storyboard.TargetName="ThumbDot"
+                                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                                 To="1.15"
+                                                                                 Duration="{StaticResource PressDuration}"
+                                                                                 EasingFunction="{StaticResource EaseOut}"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.EnterActions>
+                                                    <Trigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="ThumbDot"
+                                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                                 To="1"
+                                                                                 Duration="{StaticResource PressDuration}"
+                                                                                 EasingFunction="{StaticResource EaseOut}"/>
+                                                                <DoubleAnimation Storyboard.TargetName="ThumbDot"
+                                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                                 To="1"
+                                                                                 Duration="{StaticResource PressDuration}"
+                                                                                 EasingFunction="{StaticResource EaseOut}"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.ExitActions>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -394,7 +636,10 @@
                                     CornerRadius="8"
                                     MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                     MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                <ScrollViewer CanContentScroll="True">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.4" Color="#000000"/>
+                                </Border.Effect>
+                                <ScrollViewer CanContentScroll="True" Margin="0,4">
                                     <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
                                 </ScrollViewer>
                             </Border>
@@ -430,7 +675,7 @@
                                         <Setter TargetName="ItemBd" Property="Background" Value="{StaticResource RowHoverBrush}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="ItemBd" Property="Background" Value="#3322D3EE"/>
+                                        <Setter TargetName="ItemBd" Property="Background" Value="{StaticResource CyanSoftBrush}"/>
                                     </Trigger>
                                     <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="Opacity" Value="0.45"/>

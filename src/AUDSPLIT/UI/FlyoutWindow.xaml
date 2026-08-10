@@ -6,7 +6,7 @@
         Width="460"
         Height="500"
         MinWidth="400"
-        MinHeight="280"
+        MinHeight="320"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -26,7 +26,8 @@
 
         <Grid Margin="14">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> 
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -37,13 +38,14 @@
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
                             Margin="12,0,0,0">
-                    <Button Content="Refresh"
+                    <Button x:Name="ResetAllButton"
+                            Content="Reset all"
                             Style="{StaticResource HeaderGhostButton}"
                             Margin="0,0,6,0"
-                            Click="OnRefreshClick"/>
-                    <Button Content="Reset all"
-                            Style="{StaticResource HeaderGhostButton}"
                             Click="OnResetAllClick"/>
+                    <Button Content="Refresh"
+                            Style="{StaticResource HeaderGhostButton}"
+                            Click="OnRefreshClick"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
@@ -75,100 +77,186 @@
                     Margin="0,0,0,12"
                     Opacity="0.9"/>
 
-            <Grid Grid.Row="2">
-                <TextBlock x:Name="EmptyText"
-                           Text="No apps are playing audio.&#x0a;Start Spotify, Chrome, etc. then hit Refresh."
-                           TextAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource MutedBrush}"
-                           TextWrapping="Wrap"
-                           LineHeight="20"
-                           Visibility="Collapsed"/>
+            <Border Grid.Row="2" Style="{StaticResource SegmentBar}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="AppsTab"
+                                  Grid.Column="0"
+                                  Content="Apps"
+                                  Style="{StaticResource SegmentButton}"
+                                  IsChecked="True"
+                                  Checked="OnAppsTabChecked"
+                                  Unchecked="OnAppsTabUnchecked"/>
+                    <ToggleButton x:Name="SpeakersTab"
+                                  Grid.Column="1"
+                                  Content="Speakers"
+                                  Style="{StaticResource SegmentButton}"
+                                  Checked="OnSpeakersTabChecked"
+                                  Unchecked="OnSpeakersTabUnchecked"/>
+                </Grid>
+            </Border>
 
-                <ListBox x:Name="AppsList"
-                         ItemsSource="{Binding Apps}"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         Padding="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,6"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Focusable" Value="False"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="Row"
-                                                Background="{StaticResource SurfaceBrush}"
-                                                BorderBrush="{StaticResource BorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="10"
-                                                Padding="10,8">
-                                            <ContentPresenter/>
+            <Grid Grid.Row="3">
+                <Grid x:Name="AppsPage">
+                    <TextBlock x:Name="EmptyText"
+                               Text="No apps are playing audio.&#x0a;Start Spotify, Chrome, etc. then hit Refresh."
+                               TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource MutedBrush}"
+                               TextWrapping="Wrap"
+                               LineHeight="20"
+                               Visibility="Collapsed"/>
+
+                    <ScrollViewer x:Name="AppsScroll"
+                                  Style="{StaticResource FlyoutScrollViewer}">
+                        <ListBox x:Name="AppsList"
+                                 ItemsSource="{Binding Apps}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,0,0,6"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Focusable" Value="False"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Row"
+                                                        Background="{StaticResource SurfaceBrush}"
+                                                        BorderBrush="{StaticResource BorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="10"
+                                                        Padding="10,8">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Row" Property="Background" Value="{StaticResource RowHoverBrush}"/>
+                                                        <Setter TargetName="Row" Property="BorderBrush" Value="#FF3A4A6A"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="200"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="34" Height="34"
+                                                CornerRadius="8"
+                                                Background="{StaticResource Surface2Brush}"
+                                                Margin="0,0,10,0">
+                                            <Image Source="{Binding Icon}"
+                                                   Width="22" Height="22"
+                                                   Stretch="Uniform"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
                                         </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Row" Property="Background" Value="{StaticResource RowHoverBrush}"/>
-                                                <Setter TargetName="Row" Property="BorderBrush" Value="#FF3A4A6A"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="200"/>
-                                </Grid.ColumnDefinitions>
 
-                                <Border Width="34" Height="34"
-                                        CornerRadius="8"
-                                        Background="{StaticResource Surface2Brush}"
-                                        Margin="0,0,10,0">
-                                    <Image Source="{Binding Icon}"
-                                           Width="22" Height="22"
-                                           Stretch="Uniform"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource InkBrush}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding ProcessName}"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource MutedBrush}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+
+                                        <ComboBox Grid.Column="2"
+                                                  Style="{StaticResource DeviceCombo}"
+                                                  ItemsSource="{Binding DataContext.DeviceChoices, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                                                  DisplayMemberPath="Name"
+                                                  SelectionChanged="OnDeviceSelectionChanged"
+                                                  VerticalAlignment="Center"
+                                                  ToolTip="{Binding SelectedDevice.Name}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </Grid>
+
+                <ScrollViewer x:Name="SpeakersScroll"
+                              Style="{StaticResource FlyoutScrollViewer}"
+                              Visibility="Collapsed">
+                    <ItemsControl x:Name="DevicesList"
+                                  ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource SurfaceBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Padding="10,8"
+                                        Margin="0,0,0,6">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="40"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource InkBrush}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding VolumeText}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource MutedBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+
+                                        <ToggleButton Grid.Column="2"
+                                                      Style="{StaticResource MuteToggle}"
+                                                      IsChecked="{Binding IsMuted, Mode=TwoWay}"
+                                                      Checked="OnMuteChanged"
+                                                      Unchecked="OnMuteChanged"/>
+
+                                        <Slider Grid.Row="1"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="3"
+                                                Style="{StaticResource VolumeSlider}"
+                                                Margin="0,8,0,0"
+                                                Value="{Binding VolumePercent, Mode=TwoWay}"
+                                                ValueChanged="OnVolumeChanged"/>
+                                    </Grid>
                                 </Border>
-
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
-                                    <TextBlock Text="{Binding DisplayName}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource InkBrush}"
-                                               TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="{Binding ProcessName}"
-                                               FontSize="11"
-                                               Foreground="{StaticResource MutedBrush}"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-
-                                <ComboBox Grid.Column="2"
-                                          Style="{StaticResource DeviceCombo}"
-                                          ItemsSource="{Binding DataContext.DeviceChoices, RelativeSource={RelativeSource AncestorType=Window}}"
-                                          SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                                          DisplayMemberPath="Name"
-                                          SelectionChanged="OnDeviceSelectionChanged"
-                                          VerticalAlignment="Center"
-                                          ToolTip="{Binding SelectedDevice.Name}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
 
             <TextBlock x:Name="StatusText"
-                       Grid.Row="3"
+                       Grid.Row="4"
                        Margin="2,12,2,0"
                        FontSize="11"
                        Foreground="{StaticResource MutedBrush}"

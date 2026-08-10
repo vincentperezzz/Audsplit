@@ -85,7 +85,7 @@ public partial class App : Application
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"AUDSPLIT failed to start.\n\n{ex.GetType().Name}: {ex.Message}\n\n{ex.StackTrace}",
+                $"AUDSPLIT failed to start.\n\n{ex.Message}",
                 "AUDSPLIT",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

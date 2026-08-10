@@ -5,10 +5,10 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using MultiSpeaker.Models;
+using Audsplit.Models;
 using NAudio.CoreAudioApi;
 
-namespace MultiSpeaker.Services;
+namespace Audsplit.Services;
 
 public sealed class SessionService : IDisposable
 {

@@ -1,6 +1,6 @@
 using System.Windows.Media;
 
-namespace MultiSpeaker.Models;
+namespace Audsplit.Models;
 
 public sealed class AudioDeviceInfo
 {

@@ -1,7 +1,7 @@
-using MultiSpeaker.Models;
+using Audsplit.Models;
 using NAudio.CoreAudioApi;
 
-namespace MultiSpeaker.Services;
+namespace Audsplit.Services;
 
 public sealed class DeviceService : IDisposable
 {

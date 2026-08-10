@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace MultiSpeaker.Interop;
+namespace Audsplit.Interop;
 
 internal static class Combase
 {

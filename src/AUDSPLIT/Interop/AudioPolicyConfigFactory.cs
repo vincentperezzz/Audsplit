@@ -1,4 +1,4 @@
-namespace MultiSpeaker.Interop;
+namespace Audsplit.Interop;
 
 /// <summary>
 /// Abstraction over the undocumented AudioPolicyConfig WinRT factory.

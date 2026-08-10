@@ -1,7 +1,7 @@
-using MultiSpeaker.Interop;
-using MultiSpeaker.Models;
+using Audsplit.Interop;
+using Audsplit.Models;
 
-namespace MultiSpeaker.Services;
+namespace Audsplit.Services;
 
 public sealed class RoutingService
 {

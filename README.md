@@ -12,18 +12,18 @@ Uses the same Windows mechanism as **Settings → System → Sound → Volume mi
 ## Build & run
 
 ```powershell
-dotnet build MultiSpeaker.sln -c Release
-dotnet run --project src/MultiSpeaker -c Release
+dotnet build AUDSPLIT.sln -c Release
+dotnet run --project src/AUDSPLIT -c Release
 ```
 
 Or launch:
 
-`src\MultiSpeaker\bin\Release\net8.0-windows\AUDSPLIT.exe`
+`src\AUDSPLIT\bin\Release\net8.0-windows\AUDSPLIT.exe`
 
 Smoke-test APIs (no UI):
 
 ```powershell
-dotnet run --project src/MultiSpeaker -c Release -- --smoke
+dotnet run --project src/AUDSPLIT -c Release -- --smoke
 ```
 
 ## Usage

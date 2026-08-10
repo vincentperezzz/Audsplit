@@ -1,12 +1,12 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
-using MultiSpeaker.Services;
-using MultiSpeaker.UI;
+using Audsplit.Services;
+using Audsplit.UI;
 
-namespace MultiSpeaker;
+namespace Audsplit;
 
 public partial class App : Application
 {

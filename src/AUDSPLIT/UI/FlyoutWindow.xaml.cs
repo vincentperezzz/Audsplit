@@ -5,10 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using MultiSpeaker.Models;
-using MultiSpeaker.Services;
+using Audsplit.Models;
+using Audsplit.Services;
 
-namespace MultiSpeaker.UI;
+namespace Audsplit.UI;
 
 public partial class FlyoutWindow : Window
 {

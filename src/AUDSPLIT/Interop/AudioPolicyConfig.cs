@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace MultiSpeaker.Interop;
+namespace Audsplit.Interop;
 
 /// <summary>
 /// Version-resilient wrapper around the undocumented AudioPolicyConfig COM object.

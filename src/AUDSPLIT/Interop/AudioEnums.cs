@@ -1,4 +1,4 @@
-namespace MultiSpeaker.Interop;
+namespace Audsplit.Interop;
 
 /// <summary>
 /// Matches Windows Core Audio EDataFlow.

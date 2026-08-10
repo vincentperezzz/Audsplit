@@ -1,7 +1,9 @@
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using Audsplit.Services;
 using Audsplit.UI;
@@ -10,6 +12,12 @@ namespace Audsplit;
 
 public partial class App : Application
 {
+    private const string MutexName = @"Local\AUDSPLIT_SingleInstance";
+    private const string ShowEventName = @"Local\AUDSPLIT_ShowFlyout";
+
+    private Mutex? _mutex;
+    private EventWaitHandle? _showEvent;
+    private CancellationTokenSource? _showListenerCts;
     private TaskbarIcon? _tray;
     private FlyoutWindow? _flyout;
     private DeviceService? _devices;
@@ -29,27 +37,115 @@ public partial class App : Application
             return;
         }
 
-        ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
-        _routing = new RoutingService();
-        _devices = new DeviceService();
-        _sessions = new SessionService(_routing);
-        _flyout = new FlyoutWindow(_devices, _sessions, _routing);
-
-        _tempIconPath = TrayIconFactory.CreateTempIcon();
-        using (var loaded = new Icon(_tempIconPath))
+        _mutex = new Mutex(true, MutexName, out var createdNew);
+        if (!createdNew)
         {
-            _trayIcon = (Icon)loaded.Clone();
+            try
+            {
+                using var show = EventWaitHandle.OpenExisting(ShowEventName);
+                show.Set();
+            }
+            catch
+            {
+            }
+
+            Shutdown();
+            return;
         }
 
-        _tray = new TaskbarIcon
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowEventName);
+        _showListenerCts = new CancellationTokenSource();
+        StartShowListener(_showListenerCts.Token);
+
+        try
         {
-            ToolTipText = "AUDSPLIT — audio your way",
-            Icon = _trayIcon,
-            ContextMenu = BuildContextMenu(),
-            MenuActivation = PopupActivationMode.RightClick,
-        };
-        _tray.TrayLeftMouseUp += (_, _) => ToggleFlyout();
+            _routing = new RoutingService();
+            _devices = new DeviceService();
+            _sessions = new SessionService(_routing);
+            _flyout = new FlyoutWindow(_devices, _sessions, _routing);
+            MainWindow = _flyout;
+
+            _tempIconPath = TrayIconFactory.CreateTempIcon();
+            using (var loaded = new Icon(_tempIconPath))
+            {
+                _trayIcon = (Icon)loaded.Clone();
+            }
+
+            _tray = new TaskbarIcon
+            {
+                ToolTipText = "AUDSPLIT — audio your way",
+                Icon = _trayIcon,
+                ContextMenu = BuildContextMenu(),
+                MenuActivation = PopupActivationMode.RightClick,
+            };
+            _tray.TrayLeftMouseUp += (_, _) => ToggleFlyout();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"AUDSPLIT failed to start.\n\n{ex.GetType().Name}: {ex.Message}\n\n{ex.StackTrace}",
+                "AUDSPLIT",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown();
+            return;
+        }
+
+        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
+        {
+            if (_flyout is null)
+            {
+                return;
+            }
+
+            _flyout.ShowNearCursor();
+        });
+    }
+
+    private void StartShowListener(CancellationToken token)
+    {
+        Task.Run(() =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    if (_showEvent is null)
+                    {
+                        return;
+                    }
+
+                    if (_showEvent.WaitOne(500))
+                    {
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            if (_flyout is null)
+                            {
+                                return;
+                            }
+
+                            if (!_flyout.IsVisible)
+                            {
+                                _flyout.ShowNearCursor();
+                            }
+                            else
+                            {
+                                _flyout.Activate();
+                            }
+                        });
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
+                catch
+                {
+                }
+            }
+        }, token);
     }
 
     private static void RunSmokeTest()
@@ -73,7 +169,7 @@ public partial class App : Application
             Log($"Output devices ({outs.Count}):");
             foreach (var d in outs)
             {
-                Log($"  - {(d.IsDefault ? "[default] " : "")}{d.Name}");
+                Log($"  - {(d.IsDefault ? "[default] " : "")}{d.Name} · {(int)Math.Round(d.Volume * 100)}%{(d.IsMuted ? " muted" : "")}");
             }
 
             using var sessions = new SessionService(routing);
@@ -151,6 +247,10 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _showListenerCts?.Cancel();
+        _showListenerCts?.Dispose();
+        _showEvent?.Dispose();
+
         _tray?.Dispose();
         _trayIcon?.Dispose();
         _flyout?.Close();
@@ -161,6 +261,16 @@ public partial class App : Application
         {
             try { File.Delete(_tempIconPath); } catch { }
         }
+
+        try
+        {
+            _mutex?.ReleaseMutex();
+        }
+        catch
+        {
+        }
+
+        _mutex?.Dispose();
 
         base.OnExit(e);
     }
